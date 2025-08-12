@@ -1,3 +1,4 @@
+import asyncio
 import os
 import aiohttp
 from astrbot.core.message.components import Reply
@@ -7,6 +8,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
 from astrbot.api import logger
 
 
+
 def get_replyer_id(event: AiocqhttpMessageEvent) -> str | None:
     """获取被引用消息者的id"""
     for seg in event.get_messages():
@@ -14,7 +16,7 @@ def get_replyer_id(event: AiocqhttpMessageEvent) -> str | None:
             return str(seg.sender_id)
 
 
-async def get_nickname(event: AiocqhttpMessageEvent, user_id: int|str) -> str:
+async def get_nickname(event: AiocqhttpMessageEvent, user_id: int | str) -> str:
     """获取指定群友的群昵称或Q名"""
     client = event.bot
     group_id = event.get_group_id()
@@ -89,3 +91,33 @@ async def upload_file(
             file=str(path),
             name=name,
         )
+
+
+async def extract_audio(video_path: str, out_path: str) -> str:
+    cmd = [
+        "ffmpeg",
+        "-i",
+        str(video_path),
+        "-vn",
+        "-acodec",
+        "copy",
+        "-y",
+        out_path,
+    ]
+
+    proc = await asyncio.create_subprocess_exec(
+        *cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
+    )
+    if proc.stdout is None:
+        raise RuntimeError("无法获取 ffmpeg 的 stdout")
+
+    async for line in proc.stdout:
+        print(line.decode(), end="")
+
+    await proc.wait()
+    if proc.returncode != 0:
+        raise RuntimeError("ffmpeg 执行失败")
+
+    return out_path
