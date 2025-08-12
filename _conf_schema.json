@@ -1,0 +1,24 @@
+{
+    "format": {
+        "description": "转化的语音的格式",
+        "type": "string",
+        "hint": "建议用mp3",
+        "default": "mp3",
+        "options": [
+            "mp3",
+            "amr",
+            "wma",
+            "m4a",
+            "spx",
+            "ogg",
+            "wav",
+            "flac"
+        ]
+    },
+    "send_private":{
+        "description": "仅转发私信",
+        "hint": "语音转文件时, 是否转为私信，从而避免在群聊里显示，达到保护隐私的效果",
+        "type": "bool",
+        "default": false
+    }
+}

@@ -1,0 +1,6 @@
+name: astrbot_plugin_record_converter # 这是你的插件的唯一识别名。
+desc: QQ语音转化插件，包括语音转文件，文件转语音，克服了QQ语音无法转发的问题 # 插件简短描述
+help: 略  # 插件的帮助信息
+version: v1.0.0 # 插件版本号。格式：v1.1.1 或者 v1.1
+author: Zhalslar # 作者
+repo: https://github.com/Zhalslar/astrbot_plugin_record_converter # 插件的仓库地址
