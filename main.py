@@ -35,7 +35,8 @@ class RecordConverterPlugin(Star):
         self, event: AiocqhttpMessageEvent, file: bytes | None = None
     ) -> str:
         """生成文件名"""
-        nickname = await get_nickname(event, user_id=get_replyer_id(event))
+        replyer_id = get_replyer_id(event) or 0
+        nickname = await get_nickname(event, user_id=replyer_id)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         ext = guess_audio_ext(file) if file else self.format
         return f"{nickname}_{timestamp}.{ext}"

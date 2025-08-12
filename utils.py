@@ -4,7 +4,7 @@ from astrbot.core.message.components import Reply
 from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
     AiocqhttpMessageEvent,
 )
-from astrbot import logger
+from astrbot.api import logger
 
 
 def get_replyer_id(event: AiocqhttpMessageEvent) -> str | None:
@@ -14,7 +14,7 @@ def get_replyer_id(event: AiocqhttpMessageEvent) -> str | None:
             return str(seg.sender_id)
 
 
-async def get_nickname(event: AiocqhttpMessageEvent, user_id) -> str:
+async def get_nickname(event: AiocqhttpMessageEvent, user_id: int|str) -> str:
     """获取指定群友的群昵称或Q名"""
     client = event.bot
     group_id = event.get_group_id()
