@@ -52,6 +52,8 @@ git clone https://github.com/Zhalslar/astrbot_plugin_record_converter
 
 ### 效果图
 
+![d7c7df14be140174b38ab3d1ae0ae9cf](https://github.com/user-attachments/assets/ea67dbfc-23d3-4394-89b6-502b80e36f2d)
+
 ## 👥 贡献指南
 
 - 🌟 Star 这个项目！（点右上角的星星，感谢支持！）
