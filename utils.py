@@ -34,15 +34,14 @@ def get_reply_chain(event: AiocqhttpMessageEvent):
 
 
 async def download_file(url: str) -> bytes | None:
-    """下载图片"""
+    """下载文件"""
     url = url.replace("https://", "http://")
     try:
-        async with aiohttp.ClientSession() as client:
-            response = await client.get(url)
-            img_bytes = await response.read()
-            return img_bytes
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(url)
+            return await response.read()
     except Exception as e:
-        logger.error(f"图片下载失败: {e}")
+        logger.error(f"文件下载失败: {e}")
 
 
 def guess_audio_ext(file_bytes: bytes) -> str:

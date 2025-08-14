@@ -15,10 +15,65 @@
             "flac"
         ]
     },
-    "send_private":{
+    "send_private": {
         "description": "仅转发私信",
         "hint": "语音转文件时, 是否转为私信，从而避免在群聊里显示，达到保护隐私的效果",
         "type": "bool",
         "default": false
+    },
+    "manager_group_id": {
+        "description": "管理群群号",
+        "hint": "生成AI语音时, 用管理群中转，从而避免显示AI语音，不填表示不中转",
+        "type": "string",
+        "default": ""
+    },
+    "auto_config": {
+        "description": "AI声聊配置",
+        "type": "object",
+        "hint": "本插件有一定概率主动将bot本来要发送的文本转成语音发送",
+        "items": {
+            "default_character": {
+                "description": "默认使用的AI语音角色",
+                "hint": "将文本转为AI语音时使用",
+                "type": "string",
+                "default": "温柔妹妹",
+                "options": [
+                    "小新",
+                    "猴哥",
+                    "东北老妹儿",
+                    "广西大表哥",
+                    "说书先生",
+                    "憨憨小弟",
+                    "憨厚老哥",
+                    "妲己",
+                    "四郎",
+                    "吕布",
+                    "霸道总裁",
+                    "酥心御姐",
+                    "元气少女",
+                    "文艺少女",
+                    "磁性大叔",
+                    "邻家小妹",
+                    "低沉男声",
+                    "傲娇少女",
+                    "爹系男友",
+                    "暖心姐姐",
+                    "温柔妹妹",
+                    "书香少女"
+                ]
+            },
+            "send_record_probability": {
+                "description": "主动转语音发送的概率",
+                "type": "float",
+                "hint": "",
+                "default": 0.15
+            },
+            "max_resp_text_len": {
+                "description": "文本长度限制",
+                "type": "int",
+                "hint": "超过此长度的文本不会被转成语音发送",
+                "default": 50
+            }
+        }
     }
 }
