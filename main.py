@@ -1,30 +1,87 @@
-
 import random
+
 import aiofiles
+from pydantic import Field
+from pydantic.dataclasses import dataclass
 
 from astrbot.api import logger
-from astrbot.api.event import filter
+from astrbot.api.event import MessageChain, filter
 from astrbot.api.star import Context, Star
+from astrbot.core.agent.tool import FunctionTool
+from astrbot.core.astr_agent_context import AstrAgentContext
 from astrbot.core.config.astrbot_config import AstrBotConfig
 from astrbot.core.message.components import File, Plain, Record
 from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
     AiocqhttpMessageEvent,
 )
 
-from .utils import (
-    download_file,
-    get_reply_chain,
-    upload_file,
-    get_file_name
-)
 from .config import PluginConfig
+from .utils import download_file, get_file_name, get_reply_chain, upload_file
+
+
+@dataclass
+class RecordConverterTool(FunctionTool[AstrAgentContext]):
+    name: str = "text_to_record"
+    description: str = "Convert text into a QQ voice message."
+    # 使用插件配置中的默认 AI 语音角色。
+    character_id: str = "lucy-voice-f36"
+    # 配置中转群后优先用中转群生成语音；为空时使用当前群聊。
+    ship_gid: str = ""
+    # 提供给 LLM 的工具入参，只允许传入需要转换的文本。
+    parameters: dict = Field(
+        default_factory=lambda: {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": "Text to convert into a voice message.",
+                }
+            },
+            "required": ["text"],
+        }
+    )
+
+    async def run(self, event: AiocqhttpMessageEvent, **kwargs) -> str | None:
+        text = str(kwargs.get("text") or "").strip()
+        if not text:
+            return "error: text is required."
+
+        if not isinstance(event, AiocqhttpMessageEvent):
+            return "error: QQ voice generation only supports aiocqhttp."
+
+        group_id = self.ship_gid or event.get_group_id()
+        if not group_id:
+            return "error: QQ voice generation requires a group chat."
+
+        try:
+            audio_url = await event.bot.get_ai_record(
+                character=self.character_id,
+                group_id=int(group_id),
+                text=text,
+            )
+        except Exception as e:
+            logger.error(f"Failed to generate voice: {e}")
+            return f"error: failed to generate voice: {e}"
+
+        if not audio_url:
+            return "error: failed to generate voice URL."
+
+        await event.send(MessageChain(chain=[Record.fromURL(audio_url)]))
+        # 返回 None 表示工具已经直接发送结果，避免 LLM 再追加文字回复。
+        return None
 
 
 class RecordConverterPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
         self.cfg = PluginConfig(config, context)
-
+        if self.cfg.llm_if_reply:
+            context.add_llm_tools(
+                RecordConverterTool(
+                    character_id=self.cfg.record.character_id,
+                    ship_gid=self.cfg.ship_gid,
+                )
+            )
 
     @filter.command("转语音")
     async def to_record(self, event: AiocqhttpMessageEvent):

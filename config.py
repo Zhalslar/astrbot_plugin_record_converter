@@ -28,6 +28,7 @@ class ConfigNode:
             cls,
             {k for k in cls._schema() if not k.startswith("_")},
         )
+
     def __init__(self, data: MutableMapping[str, Any]):
         object.__setattr__(self, "_data", data)
         object.__setattr__(self, "_children", {})
@@ -72,6 +73,7 @@ class ConfigNode:
 
 # ============ 插件自定义配置 ==================
 
+
 class RecordConfig(ConfigNode):
     character_id: str
     record_prob: float
@@ -79,6 +81,7 @@ class RecordConfig(ConfigNode):
 
 
 class PluginConfig(ConfigNode):
+    llm_if_reply: bool
     only_llm_result: bool
     send_private: bool
     ship_gid: str

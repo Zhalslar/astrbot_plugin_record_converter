@@ -1,4 +1,10 @@
 {
+    "llm_if_reply": {
+        "description": "智能语音回复",
+        "type": "bool",
+        "hint": "让llm根据用户的消息内容判断是否需要语音回复",
+        "default": false
+    },
     "only_llm_result": {
         "description": "只处理LLM结果",
         "type": "bool",
